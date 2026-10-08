@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pronouns">
+<meta name="theme-color" content="#E7EEF6">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<title>Pronoun Party</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Lexend:wght@400;500;600&display=swap">
+<style>
+/* Layout: one centered "exercise book" stage; big touch tiles docked at the bottom of each game screen. Single bright classroom look in both host themes. */
+:root{
+  color-scheme: light;
+  --ground:#E7EEF6;
+  --paper:#FFFFFF;
+  --line:#C9D8EA;
+  --ink:#1D2A3A;
+  --muted:#5B6B80;
+  --accent:#2F5BD3;
+  --good:#1E9E5A;
+  --good-bg:#DDF5E7;
+  --bad:#D2462F;
+  --bad-bg:#FBE3DE;
+  --p-i:#E0457B; --p-you:#F08A24; --p-he:#2F7FD8; --p-she:#9B4FD6; --p-it:#1F9C8E; --p-we:#5E9E1F; --p-they:#C2482E;
+  --f-display:"Baloo 2", "Arial Rounded MT Bold", "Trebuchet MS", sans-serif;
+  --f-body:"Lexend", "Helvetica Neue", Arial, sans-serif;
+  --r:18px;
+}
+html,body{height:100%}
+body{background:var(--ground);color:var(--ink);font-family:var(--f-body);font-size:17px;
+  padding-inline:16px;padding-block:16px;box-sizing:border-box;
+  -webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+*{box-sizing:border-box}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.stage{max-width:880px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;gap:16px}
+
+/* top bar */
+.bar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:800;font-size:26px;letter-spacing:.2px;flex:1;min-width:0;line-height:1}
+.brand b{color:var(--accent)}
+.chip{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:8px 14px;font-weight:600;font-size:15px}
+.chip.btn:active{transform:scale(.96)}
+
+/* home */
+.hero{background:var(--paper);border-radius:var(--r);padding:28px clamp(18px,4vw,40px);
+  background-image:repeating-linear-gradient(to bottom,transparent 0 37px,var(--line) 37px 38px);
+  border-left:6px double #E9A0A0}
+.hero h1{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,6vw,54px);line-height:1.05;margin:0 0 6px;text-wrap:balance}
+.hero p{margin:0;color:var(--muted);line-height:38px;max-width:60ch}
+.strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.mode.wide{grid-column:1/-1;border-color:var(--ink);box-shadow:0 4px 0 var(--ink)}
+@media (max-width:640px){.modes{grid-template-columns:1fr}}
+
+/* error hunter */
+.words{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 6px;max-width:30ch;font-size:clamp(24px,4.2vw,36px);font-weight:500;line-height:1.3}
+.word{padding:4px 8px;border-radius:10px;border:2px solid transparent;transition:background .15s}
+.word:active{background:#DDE6FB}
+.word.nope{background:var(--ground);color:var(--muted)}
+.word.found{border-color:var(--bad);color:var(--bad);text-decoration:line-through;background:var(--bad-bg)}
+.word.fixed{border-color:var(--good);color:var(--good);background:var(--good-bg);text-decoration:none;font-family:var(--f-display);font-weight:800}
+
+/* duel */
+.duel{position:fixed;inset:0;z-index:30;background:var(--ground);display:grid;grid-template-rows:1fr auto 1fr;gap:8px;
+  padding:calc(env(safe-area-inset-top,0px) + 10px) 12px calc(env(safe-area-inset-bottom,0px) + 10px)}
+.half{border-radius:var(--r);background:var(--paper);border:4px solid var(--team);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px;text-align:center;min-height:0;overflow:hidden;transition:background .2s}
+.half.h0{transform:rotate(180deg);--team:var(--p-he)}
+.half.h1{--team:var(--p-they)}
+.half.win{background:var(--good-bg)}
+.half.lock{background:var(--bad-bg)}
+.half.lock .tile{opacity:.3}
+.dname{font-family:var(--f-display);font-weight:800;font-size:20px;color:var(--team);line-height:1}
+.half .sentence{font-size:clamp(20px,3.4vw,30px);line-height:1.35;max-width:30ch}
+.half .pic{font-size:clamp(34px,6vw,52px)}
+.dmsg{min-height:1.4em;font-weight:600;font-size:17px}
+.dtray{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.dtray .tile{font-size:clamp(22px,3.6vw,30px);min-width:66px;padding:12px 14px 8px}
+.mid{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+.score{font-family:var(--f-display);font-weight:800;font-size:28px;line-height:1;background:var(--paper);border-radius:999px;padding:8px 18px 4px;border:2px solid var(--line)}
+.score .b{color:var(--p-he)} .score .r{color:var(--p-they)}
+.duel-end{display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.mode{background:var(--paper);border-radius:var(--r);padding:20px;text-align:left;display:flex;flex-direction:column;gap:8px;
+  border:2px solid var(--line);box-shadow:0 4px 0 var(--line);transition:transform .1s}
+.mode:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.mode .tag{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mode h2{font-family:var(--f-display);font-weight:800;font-size:26px;margin:0;line-height:1.1}
+.mode p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+.best{font-size:14px;font-weight:600;color:var(--accent)}
+
+/* pronoun tiles */
+.tile{font-family:var(--f-display);font-weight:800;font-size:clamp(26px,4.4vw,36px);line-height:1;
+  min-width:84px;padding:14px 18px 10px;border-radius:16px;color:#fff;background:var(--c);
+  box-shadow:0 5px 0 rgba(0,0,0,.22);touch-action:none;transition:transform .08s,opacity .2s}
+.tile:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.22)}
+.tile.mini{font-size:20px;min-width:0;padding:8px 12px 5px;box-shadow:none;border-radius:10px}
+.tile[disabled]{opacity:.28;pointer-events:none}
+.tray{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;padding:16px;background:var(--paper);border-radius:var(--r);border:2px solid var(--line)}
+[data-p="I"]{--c:var(--p-i)} [data-p="you"]{--c:var(--p-you)} [data-p="he"]{--c:var(--p-he)} [data-p="she"]{--c:var(--p-she)}
+[data-p="it"]{--c:var(--p-it)} [data-p="we"]{--c:var(--p-we)} [data-p="they"]{--c:var(--p-they)}
+
+/* game card */
+.progress{height:12px;background:var(--paper);border-radius:999px;overflow:hidden;border:2px solid var(--line)}
+.progress i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.progress.timer i{background:var(--p-you);transition:width 1s linear}
+.card{flex:1;background:var(--paper);border-radius:var(--r);padding:clamp(20px,4vw,40px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center;min-height:260px;
+  background-image:repeating-linear-gradient(to bottom,transparent 0 47px,var(--line) 47px 48px);border-left:6px double #E9A0A0}
+.pic{font-size:clamp(52px,9vw,80px);line-height:1}
+.sentence{font-family:var(--f-body);font-weight:500;font-size:clamp(24px,4.2vw,36px);line-height:1.5;max-width:24ch;text-wrap:balance}
+.gap{display:inline-block;min-width:3.2em;padding:0 .3em;margin:0 .1em;border-bottom:4px dashed var(--accent);color:var(--accent);
+  font-family:var(--f-display);font-weight:800;border-radius:8px 8px 0 0;transition:background .15s}
+.gap.hover{background:#DDE6FB}
+.gap.ok{border-bottom-style:solid;border-color:var(--good);color:var(--good);background:var(--good-bg)}
+.gap.no{border-color:var(--bad);color:var(--bad);background:var(--bad-bg)}
+.hint{min-height:1.5em;font-size:17px;color:var(--muted);max-width:44ch}
+.hint.bad{color:var(--bad);font-weight:500}
+.hint.good{color:var(--good);font-weight:600}
+.shake{animation:shake .35s}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.pop{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.12)}}
+
+/* sort mode */
+.noun{font-family:var(--f-display);font-weight:800;font-size:clamp(30px,5.5vw,46px);background:var(--ground);border:3px solid var(--ink);border-radius:16px;padding:14px 26px 8px;
+  touch-action:none;box-shadow:0 6px 0 var(--ink);line-height:1.1}
+.buckets{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.bucket{border-radius:var(--r);padding:20px 10px 16px;background:var(--paper);border:3px solid var(--c);color:var(--c);
+  font-family:var(--f-display);font-weight:800;font-size:clamp(28px,5vw,40px);line-height:1;display:flex;flex-direction:column;align-items:center;gap:4px;transition:transform .1s,background .15s}
+.bucket small{font-family:var(--f-body);font-weight:500;font-size:13px;color:var(--muted)}
+.bucket.hover,.bucket:active{background:var(--c);color:#fff;transform:scale(1.03)}
+.bucket.hover small,.bucket:active small{color:#fff}
+
+/* drag ghost */
+.ghost{position:fixed;left:0;top:0;pointer-events:none;z-index:50;transform:translate(-50%,-60%) scale(1.08);opacity:.95}
+
+/* results */
+.result{flex:1;background:var(--paper);border-radius:var(--r);padding:clamp(20px,4vw,40px);display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center}
+.stars{font-size:clamp(48px,9vw,72px);letter-spacing:6px;line-height:1}
+.stars span{color:var(--line)} .stars span.on{color:#F2B705}
+.big{font-family:var(--f-display);font-weight:800;font-size:clamp(34px,6vw,48px);margin:0;line-height:1.1}
+.mistakes{width:100%;max-width:560px;text-align:left;display:flex;flex-direction:column;gap:8px}
+.mistakes h3{margin:0;font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.mistakes li{list-style:none;background:var(--ground);border-radius:12px;padding:10px 14px;font-size:17px;line-height:1.4}
+.mistakes ul{margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.mistakes mark{background:none;color:var(--good);font-weight:600}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.cta{font-family:var(--f-display);font-weight:800;font-size:22px;background:var(--accent);color:#fff;border-radius:14px;padding:12px 24px 8px;box-shadow:0 5px 0 #1E3E99}
+.cta.alt{background:var(--paper);color:var(--ink);border:2px solid var(--line);box-shadow:0 5px 0 var(--line)}
+.cta:active{transform:translateY(3px);box-shadow:none}
+
+/* cheat sheet */
+.sheet{position:fixed;inset:0;background:rgba(20,30,45,.55);display:flex;align-items:center;justify-content:center;padding:16px;z-index:40}
+.sheet .box{background:var(--paper);border-radius:var(--r);padding:24px;max-width:520px;width:100%;max-height:100%;overflow:auto}
+.sheet h2{font-family:var(--f-display);font-weight:800;font-size:30px;margin:0 0 10px}
+.sheet table{width:100%;border-collapse:collapse;font-size:17px}
+.sheet td{padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.sheet td:first-child{width:90px}
+.note{margin:14px 0 18px;background:#FFF4D6;border-radius:12px;padding:10px 14px;font-size:16px;line-height:1.4}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="stage" id="app"></div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="box" role="dialog" aria-label="Spickzettel">
+    <h2>Spickzettel</h2>
+    <table>
+      <tr><td><span class="tile mini" data-p="I">I</span></td><td><b>ich</b> – ich selbst</td></tr>
+      <tr><td><span class="tile mini" data-p="you">you</span></td><td><b>du / ihr / Sie</b> – die Person(en), mit denen ich spreche</td></tr>
+      <tr><td><span class="tile mini" data-p="he">he</span></td><td><b>er</b> – ein Junge, ein Mann</td></tr>
+      <tr><td><span class="tile mini" data-p="she">she</span></td><td><b>sie</b> – ein Mädchen, eine Frau</td></tr>
+      <tr><td><span class="tile mini" data-p="it">it</span></td><td><b>es</b> – ein Tier oder ein Ding</td></tr>
+      <tr><td><span class="tile mini" data-p="we">we</span></td><td><b>wir</b> – ich + andere</td></tr>
+      <tr><td><span class="tile mini" data-p="they">they</span></td><td><b>sie</b> – mehrere Personen, Tiere oder Dinge</td></tr>
+    </table>
+    <div class="note"><b>I</b> schreibt man im Englischen <b>immer groß</b>, auch mitten im Satz!<br>Am Satzanfang schreibt man jedes Pronomen groß: <i>He is …, They are …</i></div>
+    <button class="cta" id="closeSheet">Alles klar!</button>
+  </div>
+</div>
+
+<script>
+const PRON=['I','you','he','she','it','we','they'];
+const RULE={
+  I:'ich selbst → I (immer groß!)',
+  you:'die Person(en), mit der/denen man spricht → you',
+  he:'ein Junge oder ein Mann → he',
+  she:'ein Mädchen oder eine Frau → she',
+  it:'ein Tier oder ein Ding → it',
+  we:'ich + andere → we',
+  they:'mehrere Personen, Tiere oder Dinge → they'
+};
+// [Satz, Lösung, Hinweiswort, Bild]
+const GAPS=[
+ ['This is Tom. ___ is eleven years old.','he','Tom','👦'],
+ ['This is Lisa. ___ has got a cat.','she','Lisa','👧'],
+ ['Look at the dog! ___ is very big.','it','the dog','🐕'],
+ ['My name is Ben. ___ am from Germany.','I','My name is Ben','🙋‍♂️'],
+ ['Hi Emma! Are ___ OK?','you','Hi Emma','👋'],
+ ['Max and I are friends. ___ play football together.','we','Max and I','⚽'],
+ ['The children are in the park. ___ are happy.','they','the children','🛝'],
+ ['Where is my bag? ___ is under the table.','it','my bag','🎒'],
+ ['Mr Smith is our teacher. ___ is very nice.','he','Mr Smith','👨‍🏫'],
+ ['Mrs Brown is in the kitchen. ___ is cooking.','she','Mrs Brown','👩‍🍳'],
+ ['Tom and Lisa, ___ are late!','you','Tom and Lisa (angesprochen)','⏰'],
+ ['My parents are at home. ___ are tired.','they','my parents','🏠'],
+ ['The book is great. ___ is about a dragon.','it','the book','📕'],
+ ['Sally and I like music. ___ sing in the school choir.','we','Sally and I','🎵'],
+ ['I have got a sister. ___ is nine.','she','a sister','👧'],
+ ['My brother loves pizza. ___ eats it every Friday.','he','my brother','🍕'],
+ ['The cats are hungry. ___ want food.','they','the cats','🐈'],
+ ['Hello, ___ am Jack.','I','Hello … Jack','🙋‍♂️'],
+ ['Look at the elephant! ___ is grey.','it','the elephant','🐘'],
+ ['Ben and Ali are at school. ___ are in class 5b.','they','Ben and Ali','🏫'],
+ ['My grandma is seventy. ___ has got a garden.','she','my grandma','👵'],
+ ['My friends and I are in the garden. ___ are playing.','we','my friends and I','🌳'],
+ ['Can ___ help me, please, Mr Jones?','you','Mr Jones (angesprochen)','🙏'],
+ ['The pencils are on the desk. ___ are red.','they','the pencils','✏️'],
+ ['Is your dad a doctor? – Yes, ___ is.','he','your dad','🩺'],
+ ['Is your mum at work? – No, ___ isn\'t.','she','your mum','💼'],
+ ['Are you and Tim twins? – Yes, ___ are.','we','you and Tim → ich + Tim','👯'],
+ ['Is the rabbit in the garden? – Yes, ___ is.','it','the rabbit','🐇'],
+ ['Are the girls in the gym? – Yes, ___ are.','they','the girls','🤸‍♀️'],
+ ['Am I late? – No, ___ aren\'t.','you','Am I … → Antwort an dich','⏱️'],
+ ['Oliver is my best friend. ___ likes comics.','he','Oliver','📚'],
+ ['Today ___ am very happy.','I','am → ich','😄'],
+ ['Where is Grace? – ___ is in her room.','she','Grace','🚪'],
+ ['My school is old. ___ is in the town centre.','it','my school','🏫'],
+ ['Are you twelve, Paul? – No, ___ am eleven.','I','Paul spricht über sich selbst','🎂'],
+ ['My uncle has got a car. ___ is blue.','it','a car','🚗'],
+ ['Jack and Olivia, are ___ ready?','you','Jack and Olivia (angesprochen)','🏁'],
+ ['Where are my shoes? – ___ are in the hall.','they','my shoes','👟']
+];
+// [Wort, Lösung, Bild]
+const SORT=[
+ ['Tom','he','👦'],['my dad','he','👨'],['the boy','he','👦'],['Mr Green','he','👨‍🏫'],['my uncle','he','🧔'],['my grandpa','he','👴'],
+ ['Lisa','she','👧'],['my mum','she','👩'],['the girl','she','👧'],['Mrs Miller','she','👩‍🏫'],['my aunt','she','👩'],['my sister','she','👧'],
+ ['the dog','it','🐕'],['the ball','it','⚽'],['my bike','it','🚲'],['the school','it','🏫'],['the computer','it','💻'],['the apple','it','🍎'],
+ ['Tom and I','we','🙋'],['my friends and I','we','🙋'],['my family and I','we','👨‍👩‍👧'],['Lisa and I','we','🙋'],
+ ['you and Lisa','you','👉'],['you and your brother','you','👉'],['you and your friends','you','👉'],
+ ['the children','they','🧒'],['my parents','they','👫'],['Tom and Lisa','they','👫'],['the books','they','📚'],['the cats','they','🐈'],['Mr and Mrs Smith','they','👫'],['the apples','they','🍎']
+];
+
+// Fehlerjäger: falsches Wort in *Sternchen*, [Satz, richtiges Pronomen, Hinweiswort]
+const ERRS=[
+ ['My dad is tall. *She* plays tennis.','he','my dad'],
+ ['Look at my bike. *She* is new.','it','my bike'],
+ ['Lisa and I are sisters. *They* live in Berlin.','we','Lisa and I'],
+ ['Mrs Taylor is my teacher. *He* is from London.','she','Mrs Taylor'],
+ ['The apples are green. *It* are from our garden.','they','the apples'],
+ ['Tom and Ben are late. *We* are at the bus stop.','they','Tom and Ben'],
+ ['My name is Mia. *She* am ten years old.','I','My name is Mia … am'],
+ ['Sam, *he* are my best friend!','you','Sam (angesprochen)'],
+ ['The ball is in the garden. *They* is red.','it','the ball'],
+ ['My grandpa is old. *It* likes long walks.','he','my grandpa'],
+ ['Emma and Lily are in class 5a. *She* are friends.','they','Emma and Lily'],
+ ['My friends and I love pizza. *They* eat it on Fridays.','we','my friends and I'],
+ ['Is your sister at home? – Yes, *he* is.','she','your sister'],
+ ['Are the dogs in the park? – Yes, *it* are.','they','the dogs'],
+ ['Is the computer new? – No, *she* isn\'t.','it','the computer'],
+ ['Are you and Max brothers? – Yes, *they* are.','we','you and Max → ich + Max'],
+ ['My mum is a doctor. *I* works in a hospital.','she','my mum'],
+ ['*i* am eleven years old.','I','I schreibt man immer groß'],
+ ['Today *i* have got a test.','I','I schreibt man immer groß'],
+ ['The school bag is heavy. *He* is full of books.','it','the school bag'],
+ ['Kids, are *we* ready for the test?','you','Kids (angesprochen)'],
+ ['Mr and Mrs Lee are nice. *He* have got a big garden.','they','Mr and Mrs Lee']
+];
+
+const $=s=>document.querySelector(s);
+/* timeouts that are dropped when the player leaves the game */
+function later(fn,ms){const g=G;setTimeout(()=>{if(G===g)fn()},ms)}
+const app=$('#app');
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+/* sound */
+let soundOn=store.get('pp-sound',true),actx=null;
+function beep(ok){
+  if(!soundOn)return;
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const notes=ok?[660,880]:[220,180];
+    notes.forEach((f,i)=>{const o=actx.createOscillator(),g=actx.createGain();o.type=ok?'triangle':'sawtooth';o.frequency.value=f;
+      const t=actx.currentTime+i*.11;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(ok?.25:.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+.18);
+      o.connect(g).connect(actx.destination);o.start(t);o.stop(t+.2)})}catch(e){}
+}
+
+function cap(p,atStart){return p==='I'?'I':(atStart?p[0].toUpperCase()+p.slice(1):p)}
+function topBar(extra=''){
+  return `<div class="bar"><div class="brand">Pronoun <b>Party</b></div>${extra}
+  <button class="chip btn" data-act="sheet">Spickzettel</button>
+  <button class="chip btn" data-act="sound">${soundOn?'Ton an':'Ton aus'}</button></div>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act;
+  if(a==='sheet')$('#sheet').hidden=false;
+  if(a==='sound'){soundOn=!soundOn;store.set('pp-sound',soundOn);b.textContent=soundOn?'Ton an':'Ton aus'}
+  if(a==='home'){stopTimer();home()}
+});
+$('#closeSheet').onclick=()=>$('#sheet').hidden=true;
+$('#sheet').addEventListener('click',e=>{if(e.target.id==='sheet')$('#sheet').hidden=true});
+
+/* drag + tap helper: el can be dragged onto any [data-drop]; tap calls onTap */
+function draggable(el,{onDrop,onTap}){
+  let sx,sy,ghost=null,over=null,id=null;
+  const targetAt=(x,y)=>{const t=document.elementFromPoint(x,y);return t&&t.closest('[data-drop]')};
+  el.addEventListener('pointerdown',e=>{if(el.disabled)return;id=e.pointerId;sx=e.clientX;sy=e.clientY;try{el.setPointerCapture(id)}catch(_){}});
+  el.addEventListener('pointermove',e=>{
+    if(e.pointerId!==id)return;
+    if(!ghost&&Math.hypot(e.clientX-sx,e.clientY-sy)>10){ghost=el.cloneNode(true);ghost.classList.add('ghost');document.body.appendChild(ghost);el.style.opacity=.35}
+    if(ghost){ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
+      const t=targetAt(e.clientX,e.clientY);if(t!==over){over&&over.classList.remove('hover');over=t;over&&over.classList.add('hover')}}
+  });
+  const end=e=>{
+    if(e.pointerId!==id)return;id=null;
+    if(ghost){ghost.remove();ghost=null;el.style.opacity='';over&&over.classList.remove('hover');
+      const t=e.type==='pointerup'?targetAt(e.clientX,e.clientY):null;over=null;if(t)onDrop(t)}
+    else if(e.type==='pointerup')onTap&&onTap();
+  };
+  el.addEventListener('pointerup',end);el.addEventListener('pointercancel',end);
+}
+
+/* HOME */
+function home(){
+  G=null;
+  const bg=store.get('pp-best-gap',0),bs=store.get('pp-best-sort',0),bb=store.get('pp-best-blitz',0),bf=store.get('pp-best-fehler',0);
+  app.innerHTML=topBar()+`
+  <section class="hero">
+    <h1>Subject Pronouns</h1>
+    <p>Welches Pronomen passt? Tippe auf ein Kärtchen oder zieh es mit dem Finger an die richtige Stelle.</p>
+    <div class="strip">${PRON.map(p=>`<span class="tile mini" data-p="${p}">${p}</span>`).join('')}</div>
+  </section>
+  <div class="modes">
+    <button class="mode" data-go="gap"><span class="tag">Level 1 · 10 Sätze</span><h2>Lückensätze</h2><p>Setze das passende Pronomen in die Lücke. Bei einem Fehler bekommst du einen Tipp.</p><span class="best">${bg?`Bestwert: ${bg} von 10`:'Noch nicht gespielt'}</span></button>
+    <button class="mode" data-go="sort"><span class="tag">Level 2 · 12 Karten</span><h2>Sortiermaschine</h2><p>Wer ist das? Schieb <i>my mum</i>, <i>the dog</i> oder <i>Tom and I</i> in die richtige Box.</p><span class="best">${bs?`Bestwert: ${bs} von 12`:'Noch nicht gespielt'}</span></button>
+    <button class="mode" data-go="blitz"><span class="tag">Level 3 · 60 Sekunden</span><h2>Blitzrunde</h2><p>So viele Sätze wie möglich in einer Minute. Hier gibt es keine zweite Chance!</p><span class="best">${bb?`Rekord: ${bb} richtig`:'Noch kein Rekord'}</span></button>
+    <button class="mode" data-go="fehler"><span class="tag">Level 4 · 10 Sätze</span><h2>Fehlerjäger</h2><p>In jedem Satz versteckt sich ein falsches Pronomen. Tippe es an und verbessere es.</p><span class="best">${bf?`Bestwert: ${bf} von 10`:'Noch nicht gespielt'}</span></button>
+    <button class="mode wide" data-go="duel"><span class="tag">Zu zweit · ein iPad · wer zuerst 7 Punkte hat</span><h2>Pronoun-Duell</h2><p>Legt das iPad flach zwischen euch auf den Tisch. Jeder hat seine eigene Bildschirmhälfte. Wer zuerst das richtige Pronomen tippt, bekommt den Punkt. Wer falsch tippt, ist für diesen Satz gesperrt.</p></button>
+  </div>`;
+  app.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({gap:startGap,sort:startSort,blitz:startBlitz,fehler:startFehler,duel:startDuel})[b.dataset.go]());
+}
+
+/* GAP GAME (also used by blitz) */
+let G=null,timer=null;
+function stopTimer(){if(timer){clearInterval(timer);timer=null}}
+function startGap(){G={mode:'gap',qs:shuffle(GAPS).slice(0,10),i:0,score:0,miss:[],tried:false};renderGap()}
+function startBlitz(){G={mode:'blitz',qs:shuffle(GAPS).concat(shuffle(GAPS)),i:0,score:0,miss:[],left:60,lock:false};renderGap();
+  stopTimer();timer=setInterval(()=>{G.left--;const t=$('#tleft');if(t)t.textContent=G.left+' s';const b=$('#pbar');if(b)b.style.width=(G.left/60*100)+'%';
+    if(G.left<=0){stopTimer();results()}},1000)}
+function renderGap(){
+  const q=G.qs[G.i];const [before,after]=q[0].split('___');
+  const atStart=/(^|[.!?–]\s*)$/.test(before);
+  G.atStart=atStart;G.tried=false;G.lock=false;
+  const blitz=G.mode==='blitz';
+  const counter=blitz?`<span class="chip" id="tleft">${G.left} s</span><span class="chip">✓ ${G.score}</span>`:`<span class="chip">${G.i+1} / ${G.qs.length}</span>`;
+  app.innerHTML=topBar(`<button class="chip btn" data-act="home">Menü</button>${counter}`)+`
+  <div class="progress ${blitz?'timer':''}"><i id="pbar" style="width:${blitz?G.left/60*100:G.i/G.qs.length*100}%"></i></div>
+  <div class="card" id="card">
+    <div class="pic" aria-hidden="true">${q[3]}</div>
+    <div class="sentence">${esc(before)}<span class="gap" data-drop="gap" id="gap">&nbsp;</span>${esc(after)}</div>
+    <div class="hint" id="hint">&nbsp;</div>
+  </div>
+  <div class="tray">${PRON.map(p=>`<button class="tile" data-p="${p}">${p}</button>`).join('')}</div>`;
+  app.querySelectorAll('.tray .tile').forEach(t=>{const p=t.dataset.p;draggable(t,{onDrop:()=>answerGap(p,t),onTap:()=>answerGap(p,t)})});
+}
+function answerGap(p,tile){
+  if(G.lock)return;
+  const q=G.qs[G.i],gap=$('#gap'),hint=$('#hint');
+  gap.textContent=cap(p,G.atStart);
+  if(p===q[1]){
+    G.lock=true;beep(true);
+    if(!G.tried)G.score++;
+    gap.className='gap ok pop';
+    hint.className='hint good';hint.textContent=G.tried?'Jetzt stimmt’s!':['Super!','Richtig!','Well done!','Great!','Klasse!'][Math.floor(Math.random()*5)];
+    later(nextGap,G.mode==='blitz'?500:1100);
+  }else{
+    beep(false);
+    gap.className='gap no shake';
+    if(!G.tried)G.miss.push({q:q[0],a:q[1],wrong:p,start:G.atStart});
+    G.tried=true;
+    if(G.mode==='blitz'){
+      G.lock=true;hint.className='hint bad';hint.textContent='Richtig wäre: '+cap(q[1],G.atStart);
+      setTimeout(()=>{gap.textContent=cap(q[1],G.atStart);gap.className='gap ok'},350);
+      later(nextGap,1300);
+    }else{
+      tile.disabled=true;
+      hint.className='hint bad';hint.textContent='Tipp: „'+q[2]+'“ – '+RULE[q[1]];
+      setTimeout(()=>{if(gap.classList.contains('no'))gap.className='gap no'},400);
+    }
+  }
+}
+function nextGap(){
+  G.i++;
+  if(G.mode==='blitz'){if(G.left>0){if(G.i>=G.qs.length)G.i=0;renderGap()}return}
+  if(G.i>=G.qs.length)results();else renderGap();
+}
+
+/* SORT GAME */
+const BUCKET_DE={he:'er',she:'sie (eine)',it:'es',we:'wir',you:'ihr',they:'sie (mehrere)'};
+function startSort(){G={mode:'sort',qs:shuffle(SORT).slice(0,12),i:0,score:0,miss:[],tried:false};renderSort()}
+function renderSort(){
+  const q=G.qs[G.i];G.tried=false;G.lock=false;
+  app.innerHTML=topBar(`<button class="chip btn" data-act="home">Menü</button><span class="chip">${G.i+1} / ${G.qs.length}</span>`)+`
+  <div class="progress"><i style="width:${G.i/G.qs.length*100}%"></i></div>
+  <div class="card" id="card" style="min-height:220px">
+    <div class="pic" aria-hidden="true">${q[2]}</div>
+    <div class="noun" id="noun">${esc(q[0])}</div>
+    <div class="hint" id="hint">Zieh die Karte in die passende Box – oder tippe auf die Box.</div>
+  </div>
+  <div class="buckets">${['he','she','it','we','you','they'].map(p=>`<button class="bucket" data-p="${p}" data-drop="${p}">${p}<small>${BUCKET_DE[p]}</small></button>`).join('')}</div>`;
+  draggable($('#noun'),{onDrop:t=>answerSort(t.dataset.drop,t)});
+  app.querySelectorAll('.bucket').forEach(b=>b.addEventListener('click',()=>answerSort(b.dataset.p,b)));
+}
+function answerSort(p,box){
+  if(G.lock)return;
+  const q=G.qs[G.i],hint=$('#hint'),noun=$('#noun');
+  if(p===q[1]){
+    G.lock=true;beep(true);if(!G.tried)G.score++;
+    noun.textContent=q[0]+' → '+p;noun.style.borderColor='var(--good)';noun.style.color='var(--good)';noun.classList.add('pop');
+    hint.className='hint good';hint.textContent=G.tried?'Jetzt stimmt’s!':['Super!','Richtig!','Well done!','Great!'][Math.floor(Math.random()*4)];
+    later(()=>{G.i++;G.i>=G.qs.length?results():renderSort()},1100);
+  }else{
+    beep(false);
+    if(!G.tried)G.miss.push({noun:q[0],a:q[1],wrong:p});
+    G.tried=true;
+    box.disabled=true;box.style.opacity=.3;
+    noun.classList.remove('shake');void noun.offsetWidth;noun.classList.add('shake');
+    hint.className='hint bad';hint.textContent='Tipp: '+RULE[q[1]].replace(/ → \w+.*$/,'')+'. Versuch es nochmal!';
+  }
+}
+
+/* ERROR HUNTER */
+function startFehler(){G={mode:'fehler',qs:shuffle(ERRS).slice(0,10),i:0,score:0,miss:[]};renderFehler()}
+function renderFehler(){
+  const q=G.qs[G.i];G.tried=false;G.lock=false;G.step=1;
+  const words=q[0].split(' ');
+  G.words=words;G.bad=words.findIndex(w=>w.includes('*'));
+  const prev=words.slice(0,G.bad).join(' ');
+  G.atStart=G.bad===0||/[.!?–]$/.test(prev);
+  app.innerHTML=topBar(`<button class="chip btn" data-act="home">Menü</button><span class="chip">${G.i+1} / ${G.qs.length}</span>`)+`
+  <div class="progress"><i style="width:${G.i/G.qs.length*100}%"></i></div>
+  <div class="card" id="card">
+    <div class="words" id="words">${words.map((w,i)=>`<button class="word" data-i="${i}">${esc(w.replace(/\*/g,''))}</button>`).join('')}</div>
+    <div class="hint" id="hint">Schritt 1: Tippe auf das falsche Wort.</div>
+  </div>
+  <div class="tray">${PRON.map(p=>`<button class="tile" data-p="${p}" disabled>${p}</button>`).join('')}</div>`;
+  app.querySelectorAll('.word').forEach(b=>b.addEventListener('click',()=>pickWord(+b.dataset.i,b)));
+  app.querySelectorAll('.tray .tile').forEach(t=>t.addEventListener('click',()=>fixWord(t.dataset.p,t)));
+}
+function markMiss(){
+  if(G.tried)return;G.tried=true;
+  const q=G.qs[G.i];
+  const html=G.words.map((w,i)=>i===G.bad?`<mark>${cap(q[1],G.atStart)}</mark>${esc(w.replace(/^.*\*/,''))}`:esc(w)).join(' ');
+  G.miss.push({html});
+}
+function pickWord(i,btn){
+  if(G.step!==1||G.lock)return;
+  const hint=$('#hint');
+  if(i===G.bad){
+    beep(true);btn.classList.add('found');G.step=2;
+    hint.className='hint good';hint.textContent='Gefunden! Schritt 2: Welches Pronomen ist richtig?';
+    app.querySelectorAll('.tray .tile').forEach(t=>t.disabled=false);
+    btn.closest('.words').querySelectorAll('.word').forEach(w=>{if(w!==btn)w.disabled=true});
+  }else{
+    beep(false);markMiss();
+    btn.classList.add('nope','shake');btn.disabled=true;
+    hint.className='hint bad';hint.textContent='„'+btn.textContent+'“ ist richtig. Achte auf die Pronomen!';
+  }
+}
+function fixWord(p,tile){
+  if(G.step!==2||G.lock)return;
+  const q=G.qs[G.i],hint=$('#hint'),w=$('#words').children[G.bad];
+  if(p===q[1]){
+    G.lock=true;beep(true);if(!G.tried)G.score++;
+    w.textContent=cap(p,G.atStart)+G.words[G.bad].replace(/^.*\*/,'');
+    w.className='word fixed pop';
+    hint.className='hint good';hint.textContent=G.tried?'Jetzt stimmt’s!':['Super!','Richtig!','Well done!','Great!'][Math.floor(Math.random()*4)];
+    later(()=>{G.i++;G.i>=G.qs.length?results():renderFehler()},1300);
+  }else{
+    beep(false);markMiss();tile.disabled=true;
+    hint.className='hint bad';
+    hint.textContent=q[2].startsWith('I schreibt')?'Tipp: '+q[2]+'!':'Tipp: „'+q[2]+'“ – '+RULE[q[1]];
+  }
+}
+
+/* DUEL */
+const TEAM=['Team Blau','Team Rot'];
+function startDuel(){G={mode:'duel',qs:shuffle(GAPS),i:0,sc:[0,0],target:7};renderDuel()}
+function renderDuel(){
+  const q=G.qs[G.i%G.qs.length];const [b,a]=q[0].split('___');
+  G.atStart=/(^|[.!?–]\s*)$/.test(b);G.locked=[false,false];G.done=false;
+  const half=pl=>`<div class="half h${pl}" id="h${pl}">
+    <div class="dname">${TEAM[pl]}</div>
+    <div class="pic" aria-hidden="true">${q[3]}</div>
+    <div class="sentence">${esc(b)}<span class="gap" id="g${pl}">&nbsp;</span>${esc(a)}</div>
+    <div class="dmsg" id="m${pl}">&nbsp;</div>
+    <div class="dtray">${PRON.map(p=>`<button class="tile" data-p="${p}" data-pl="${pl}">${p}</button>`).join('')}</div></div>`;
+  app.innerHTML=`<div class="duel">${half(0)}
+    <div class="mid"><button class="chip btn" data-act="home">Menü</button>
+    <span class="score"><span class="b">${G.sc[0]}</span> : <span class="r">${G.sc[1]}</span></span>
+    <span class="chip">Ziel: ${G.target} Punkte</span></div>${half(1)}</div>`;
+  app.querySelectorAll('.dtray .tile').forEach(t=>t.addEventListener('pointerdown',e=>{e.preventDefault();duelAnswer(+t.dataset.pl,t.dataset.p)}));
+}
+function duelShow(){const q=G.qs[G.i%G.qs.length];[0,1].forEach(pl=>{const g=$('#g'+pl);g.textContent=cap(q[1],G.atStart);g.className='gap ok'})}
+function duelAnswer(pl,p){
+  if(G.done||G.locked[pl])return;
+  const q=G.qs[G.i%G.qs.length],other=1-pl;
+  if(p===q[1]){
+    G.done=true;beep(true);G.sc[pl]++;duelShow();
+    $('#h'+pl).classList.add('win');
+    $('#m'+pl).textContent='Punkt für dich!';$('#m'+pl).style.color='var(--good)';
+    $('#m'+other).textContent=G.locked[other]?'Punkt für '+TEAM[pl]+'.':'Zu langsam! Punkt für '+TEAM[pl]+'.';
+    $('.score').innerHTML=`<span class="b">${G.sc[0]}</span> : <span class="r">${G.sc[1]}</span>`;
+    later(()=>{if(G.sc[pl]>=G.target)duelEnd(pl);else{G.i++;renderDuel()}},1700);
+  }else{
+    beep(false);G.locked[pl]=true;
+    const h=$('#h'+pl);h.classList.add('lock');
+    $('#m'+pl).textContent='Falsch! Du bist für diesen Satz gesperrt.';$('#m'+pl).style.color='var(--bad)';
+    if(G.locked[other]){
+      G.done=true;duelShow();
+      [0,1].forEach(x=>{$('#m'+x).textContent='Beide falsch. Richtig ist: '+cap(q[1],G.atStart);$('#m'+x).style.color='var(--bad)'});
+      later(()=>{G.i++;renderDuel()},2200);
+    }
+  }
+}
+function duelEnd(w){
+  const end=pl=>`<div class="half h${pl} ${pl===w?'win':''}"><div class="duel-end">
+    <div class="stars">${pl===w?'<span class="on">★</span><span class="on">★</span><span class="on">★</span>':'<span>★</span>'}</div>
+    <p class="big">${pl===w?'Gewonnen!':'Knapp verloren!'}</p>
+    <p style="margin:0;font-size:18px">${TEAM[w]} gewinnt ${G.sc[w]} : ${G.sc[1-w]}</p></div></div>`;
+  app.innerHTML=`<div class="duel">${end(0)}
+    <div class="mid"><button class="cta" id="again">Revanche</button><button class="cta alt" data-act="home">Zum Menü</button></div>${end(1)}</div>`;
+  $('#again').onclick=startDuel;
+}
+
+/* RESULTS */
+function results(){
+  stopTimer();
+  window.scrollTo(0,0);
+  const m=G.mode,total=m==='blitz'?null:G.qs.length,s=G.score;
+  let stars,headline;
+  if(m==='blitz'){stars=s>=20?3:s>=12?2:s>=6?1:0}else{const r=s/total;stars=r>=.9?3:r>=.7?2:r>=.5?1:0}
+  headline=['Weiter üben!','Gut gemacht!','Sehr gut!','Fantastic!'][stars];
+  const key='pp-best-'+m,best=store.get(key,0),newBest=s>best;if(newBest)store.set(key,s);
+  const list=G.miss.map(x=>{
+    if(m==='fehler')return `<li>${x.html}</li>`;
+    if(m==='sort')return `<li>${esc(x.noun)} → <mark>${x.a}</mark> <span style="color:var(--muted)">(nicht ${x.wrong})</span></li>`;
+    const [b,a]=x.q.split('___');return `<li>${esc(b)}<mark>${cap(x.a,x.start)}</mark>${esc(a)}</li>`}).join('');
+  app.innerHTML=topBar()+`
+  <div class="result">
+    <div class="stars">${[0,1,2].map(i=>`<span class="${i<stars?'on':''}">★</span>`).join('')}</div>
+    <p class="big">${headline}</p>
+    <p style="margin:0;font-size:20px">${m==='blitz'?`Du hast <b>${s}</b> Sätze in 60 Sekunden geschafft.`:`<b>${s}</b> von ${total} beim ersten Versuch richtig.`}${newBest?' <b style="color:var(--accent)">Neuer Rekord!</b>':''}</p>
+    ${list?`<div class="mistakes"><h3>Das schauen wir uns nochmal an</h3><ul>${list}</ul></div>`:`<p style="margin:0;color:var(--good);font-weight:600">Kein einziger Fehler – perfekt!</p>`}
+    <div class="row"><button class="cta" id="again">Nochmal spielen</button><button class="cta alt" data-act="home">Zum Menü</button></div>
+  </div>`;
+  $('#again').onclick=()=>({gap:startGap,sort:startSort,blitz:startBlitz,fehler:startFehler})[m]();
+}
+
+home();
+</script>
+</body>
+</html>
