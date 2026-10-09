@@ -27,8 +27,9 @@ Bestwerte werden nur lokal auf dem jeweiligen Gerät gespeichert.
 
 Übungsseite für Klasse 5 (NRW) zu Kapitel I „Zahlen und Größen“: **[mathe-ka1/](mathe-ka1/)**
 
-- 7-Tage-Lernpfad mit 6 Lernabschnitten: Daten darstellen, Zahlen ordnen, große Zahlen & Runden, Grundrechenarten, Geld, Längen
-- je Abschnitt: Merkkasten, ⭐ Pflicht- und 🚀 Extra-Aufgaben, gestufte Tipps, Blitz-Check mit Sofort-Feedback, Sticker
+- 7-Tage-Lernpfad mit 5 Lernabschnitten: Daten und Diagramme, Zahlen ordnen und Zahlenstrahl, große Zahlen & Runden, Grundrechenarten, Geld
+- Lernziele = Checkliste „Kompetenzen zur 1. Klassenarbeit“ (Arbeitsblatt 4) mit Selbsteinschätzung und Links zu passenden Aufgaben
+- je Abschnitt: Merkkasten, ⭐ Pflicht- und 🚀 Extra-Aufgaben (inkl. Diagramme und Zahlenstrahlen selbst zeichnen), gestufte Tipps, Blitz-Check mit Sofort-Feedback, Sticker
 - 2 Probearbeiten (45 min, 40 Punkte) mit Timer, Druckansicht, Erwartungshorizont, Punkte-Rechner und Notenschlüssel
 - Lösungen sind verschlüsselt und werden erst mit dem Code der Begleitperson Schritt für Schritt sichtbar
 
