@@ -20,3 +20,16 @@ Dazu gibt es einen Spickzettel mit allen Pronomen und eine Fehlerauswertung am E
 Mit aktivierten **GitHub Pages** (Settings → Pages → Branch `main`, Ordner `/root`) bekommt das Spiel eine feste Web-Adresse für die Klasse.
 
 Bestwerte werden nur lokal auf dem jeweiligen Gerät gespeichert.
+
+---
+
+# Mathe-Fit 5 – Training für die 1. Mathearbeit
+
+Übungsseite für Klasse 5 (NRW) zu Kapitel I „Zahlen und Größen“: **[mathe-ka1/](mathe-ka1/)**
+
+- 7-Tage-Lernpfad mit 6 Lernabschnitten: Daten darstellen, Zahlen ordnen, große Zahlen & Runden, Grundrechenarten, Geld, Längen
+- je Abschnitt: Merkkasten, ⭐ Pflicht- und 🚀 Extra-Aufgaben, gestufte Tipps, Blitz-Check mit Sofort-Feedback, Sticker
+- 2 Probearbeiten (45 min, 40 Punkte) mit Timer, Druckansicht, Erwartungshorizont, Punkte-Rechner und Notenschlüssel
+- Lösungen sind verschlüsselt und werden erst mit dem Code der Begleitperson Schritt für Schritt sichtbar
+
+Mit aktivierten GitHub Pages erreichbar unter `https://mohr-fbg.github.io/tim/mathe-ka1/`.
